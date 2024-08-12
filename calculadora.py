@@ -19,16 +19,6 @@ screen.grid(row=1, column=1, columnspan=5, sticky="nsew")
 screen.config(anchor=tkinter.E)
 
 
-def clear(option):
-    if option == "CE":
-        screen["text"] = "0"
-    else:
-        screen["text"] = "0"
-        screen_dos["text"] = ""
-        list_numbers.clear()
-        operators.clear()
-
-
 # BUTTONS
 button_options = {"width": 5, "height": 2, "font": ("Google Sans Mono", 14)}
 
@@ -123,7 +113,7 @@ zero = tkinter.Button(
 zero.grid(row=6, column=2)
 
 dot = tkinter.Button(
-    window, **button_options, text=".", command=lambda: digit_function(".")
+    window, **button_options, text=".", command=lambda: digit_function(",")
 )
 dot.grid(row=6, column=3)
 
@@ -133,9 +123,36 @@ equal = tkinter.Button(
 equal.grid(row=6, column=4)
 
 
-def calculate(list_numbers=list_numbers, operators=operators):
-    if operators[1] == "%":
-        result = list_numbers[1] / 100
+def clear(option):
+    screen["text"] = "0"
+    screen["font"] = ("Google Sans Mono", 34)
+    if "=" in screen_dos["text"]:
+        screen_dos["text"] = ""
+    if option == "C":
+        screen_dos["text"] = ""
+        list_numbers.clear()
+        operators.clear()
+
+
+def digit_function(character):
+    if len(screen["text"]) == 15:
+        return
+    elif not "=" in screen_dos["text"] and (screen["text"] != "0" or character == ","):
+        screen["text"] += character
+    else:
+        screen["text"] = character
+        if "=" in screen_dos["text"]:
+            screen_dos["text"] = ""
+
+    if len(screen["text"]) > 9:
+        screen["font"] = ("Google Sans Mono", 20)
+    else:
+        screen["font"] = ("Google Sans Mono", 34)
+
+
+def calculate():
+    if "%" in operators:
+        result = list_numbers[operators.index("%")] / 100
     elif operators[0] == "+":
         result = list_numbers[0] + list_numbers[1]
     elif operators[0] == "-":
@@ -145,70 +162,62 @@ def calculate(list_numbers=list_numbers, operators=operators):
     elif operators[0] == "/":
         result = list_numbers[0] / list_numbers[1]
 
-    # print(list_numbers, "list_numbers calculate antes")
-    # print(operators, "operators calculate antes")
+    if str(result).endswith(",0"):
+        result = int(result)
+    if len(str(result)) > 9:
+        screen["font"] = ("Google Sans Mono", 20)
+
+    # TODO: Terminar de implementar la notación científica
+    # if len(str(result)) > 15:
+    #     result = "{:.2e}".format(result)
+
     print(result, "calculate")
+
     return result
 
-    if "%" not in operators:
-        if len(operators) > 1 and not "=" in operators:
-            screen_dos["text"] = str(result) + " " + operators[1] + " "
-            screen["text"] = "0"
-            operators.remove(operators[0])
-            list_numbers = [result]
-        else:
-            screen["text"] = str(result)
-            list_numbers.clear()
-            operators.clear()
-    else:
-        list_numbers[1] = result
-        screen_dos["text"] += str(result)
-        operators.remove(operators[1])
 
-    print(list_numbers, "list_numbers calculate despues")
-    print(operators, "operators calculate despues")
-
-
-def digit_function(character):
-    if screen["text"] != "0" or character == ".":
-        screen["text"] += character
-    else:
-        screen["text"] = character
-
-
-# TODO: Comprobar la siguiente operación: 100 x 20% + 5, fijarse en los prints de la terminal.
 def operator_function(character):
+    global list_numbers, screen_dos
     if character == "+/-" and screen["text"] != "0":
         if "-" in screen["text"]:
             screen["text"] = screen["text"].replace("-", "")
         else:
             screen["text"] = "-" + screen["text"]
+    elif character == "%" and len(operators) == 0:
+        screen["text"] = "0"
+    elif character == "=" and len(operators) == 0:
+        screen_dos = screen["text"] + " " + character + " "
     else:
-        if len(list_numbers) != 2:
-            if "." in screen["text"]:
-                list_numbers.append(float(screen["text"]))
-            else:
-                list_numbers.append(int(screen["text"]))
-        print(list_numbers, "list_numbers operator_function")
         operators.append(character)
-        if "=" in screen_dos["text"] or len(operators) > 1 and character != "%":
-            screen_dos["text"] = screen["text"] + " " + character + " "
-        elif character != "%":
-            screen_dos["text"] += screen["text"] + " " + character + " "
-        print(operators, "operators operator_function")
-        if character != "=":
-            screen["text"] = "0"
-            if len(operators) > 1:
-                calculate()
-        elif character == "%":
-            if len(list_numbers) > 1:
-                calculate()
+        if "." in screen["text"]:
+            list_numbers.append(float(screen["text"]))
         else:
-            if len(list_numbers) > 1:
-                calculate()
-            else:
+            list_numbers.append(int(screen["text"]))
+        print(list_numbers, "list_numbers cuando se agrega, operator_function")
+
+        if len(list_numbers) == 1:
+            screen_dos["text"] = screen["text"] + " " + character + " "
+            screen["text"] = "0"
+        else:
+            result = calculate()
+            if character == "%":
+                list_numbers[1] = result
+                screen_dos["text"] += str(result)
+                screen["text"] = "0"
+                operators.remove(character)
+            elif character == "=":
+                screen_dos["text"] += screen["text"] + " " + character + " "
+                screen["text"] = str(result)
                 list_numbers.clear()
                 operators.clear()
+            else:
+                screen_dos["text"] = str(result) + " " + character + " "
+                screen["text"] = "0"
+                list_numbers = [result]
+                operators.remove(operators[0])
+
+            print(list_numbers, "list_numbers despues de calculate, operator_function")
+            print(operators, "operators despues de calculate, operator_function")
 
 
 window.mainloop()
