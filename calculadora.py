@@ -1,26 +1,44 @@
 import tkinter
-from functools import reduce
 
 window = tkinter.Tk()
 
 list_numbers = []
 operators = []
 
-window.geometry("260x475")
+window.geometry("340x390")
+window.resizable(False, False)
 
 window.title("Calculadora")
 
-screen_dos = tkinter.Label(window, bg="#E5E5E5", text="", font=("Google Sans Mono", 14))
-screen_dos.grid(row=0, column=0, columnspan=5, sticky="nsew")
-screen_dos.config(anchor=tkinter.E, fg="#AAA9A9")
+#region SCREENS
+secondary_screen = tkinter.Label(
+    window,
+    fg="aliceblue",
+    bg="black",
+    text="",
+    font=("Google Sans Mono", 14),
+    anchor="e",
+)
+secondary_screen.grid(row=0, column=0, columnspan=5, sticky="nsew")
 
-screen = tkinter.Label(window, bg="#E5E5E5", text="0", font=("Google Sans Mono", 34))
+screen = tkinter.Label(
+    window, bg="black", fg="aliceblue", text="0", font=("Google Sans Mono", 30), anchor="e"
+)
 screen.grid(row=1, column=1, columnspan=5, sticky="nsew")
-screen.config(anchor=tkinter.E)
 
+window.grid_rowconfigure(1, minsize=62)
 
-# BUTTONS
-button_options = {"width": 5, "height": 2, "font": ("Google Sans Mono", 14)}
+#region BUTTONS
+button_options = {
+    "width": 7,
+    "height": 1,
+    "pady": 8,
+    "bg": "#494443",
+    "fg": "aliceblue",
+    "bd": 1,
+    "cursor": "hand2",
+    "font": ("Google Sans Mono", 14),
+}
 
 percentage = tkinter.Button(
     window, **button_options, text="%", command=lambda: operator_function("%")
@@ -122,32 +140,35 @@ equal = tkinter.Button(
 )
 equal.grid(row=6, column=4)
 
-
+#region FUNCTIONS
 def clear(option):
-    screen["text"] = "0"
-    screen["font"] = ("Google Sans Mono", 34)
-    if "=" in screen_dos["text"]:
-        screen_dos["text"] = ""
+    screen.config(font=("Google Sans Mono", 30), text="0")
+    if "=" in secondary_screen["text"]:
+        secondary_screen["text"] = ""
     if option == "C":
-        screen_dos["text"] = ""
+        secondary_screen["text"] = ""
         list_numbers.clear()
         operators.clear()
 
 
-def digit_function(character):
-    if len(screen["text"]) == 15:
+def digit_function(digit):
+    if len(screen["text"]) == 15 or ("," in screen["text"] and digit == ","):
         return
-    elif not "=" in screen_dos["text"] and (screen["text"] != "0" or character == ","):
-        screen["text"] += character
+    elif screen["text"] == "0" or screen["text"].isalpha() or "No" in screen["text"] or "=" in secondary_screen["text"]:
+        if digit == ",":
+            screen["text"] = "0" + digit
+        else:
+            screen["text"] = digit
     else:
-        screen["text"] = character
-        if "=" in screen_dos["text"]:
-            screen_dos["text"] = ""
+        screen["text"] += digit
 
-    if len(screen["text"]) > 9:
+    if "=" in secondary_screen["text"]:
+        secondary_screen["text"] = ""
+
+    if len(screen["text"]) > 10:
         screen["font"] = ("Google Sans Mono", 20)
     else:
-        screen["font"] = ("Google Sans Mono", 34)
+        screen["font"] = ("Google Sans Mono", 30)
 
 
 def calculate():
@@ -160,58 +181,77 @@ def calculate():
     elif operators[0] == "x":
         result = list_numbers[0] * list_numbers[1]
     elif operators[0] == "/":
-        result = list_numbers[0] / list_numbers[1]
+        try:
+            result = list_numbers[0] / list_numbers[1]
+        except ZeroDivisionError:
+            return "No se puede dividir entre 0"
 
-    if str(result).endswith(",0"):
+    if str(result).endswith(".0"):
         result = int(result)
-    if len(str(result)) > 9:
-        screen["font"] = ("Google Sans Mono", 20)
-
     # TODO: Terminar de implementar la notación científica
     # if len(str(result)) > 15:
     #     result = "{:.2e}".format(result)
-
+    if "." in str(result) and not "%" in operators:
+        result = str(result).replace(".", ",")
+    else:
+        result = str(result)
+   
     print(result, "calculate")
 
     return result
 
 
-def operator_function(character):
-    global list_numbers, screen_dos
-    if character == "+/-" and screen["text"] != "0":
-        if "-" in screen["text"]:
-            screen["text"] = screen["text"].replace("-", "")
-        else:
-            screen["text"] = "-" + screen["text"]
-    elif character == "%" and len(operators) == 0:
+def operator_function(operator):
+    global list_numbers, secondary_screen
+    if screen["text"].endswith(","):
+        return
+    elif "No" in screen["text"] or screen["text"].isalpha():
+        screen["text"] = "Error"
+    elif operator == "+/-":
+        if screen["text"] != "0" and not "No" in screen["text"] and not screen["text"].isalpha():
+            if "-" in screen["text"]:
+                screen["text"] = screen["text"].replace("-", "")
+            else:
+                screen["text"] = "-" + screen["text"]
+    elif operator == "%" and len(operators) == 0:
         screen["text"] = "0"
-    elif character == "=" and len(operators) == 0:
-        screen_dos = screen["text"] + " " + character + " "
+        if "=" in secondary_screen["text"]:
+            secondary_screen["text"] = ""
+    elif operator == "=" and len(operators) == 0:
+        secondary_screen["text"] = screen["text"] + " " + operator + " "
     else:
-        operators.append(character)
-        if "." in screen["text"]:
-            list_numbers.append(float(screen["text"]))
+        if "," in screen["text"]:
+            list_numbers.append(float(screen["text"].replace(",", ".")))
         else:
             list_numbers.append(int(screen["text"]))
         print(list_numbers, "list_numbers cuando se agrega, operator_function")
+        operators.append(operator)
+        print(operators, "operators cuando se agrega, operator_function")
 
         if len(list_numbers) == 1:
-            screen_dos["text"] = screen["text"] + " " + character + " "
+            secondary_screen["text"] = screen["text"] + " " + operator + " "
             screen["text"] = "0"
         else:
             result = calculate()
-            if character == "%":
+            if result == "No se puede dividir entre 0":
+                secondary_screen["text"] = ""
+                screen.config(font=("Google Sans Mono", 15), text=result)
+                list_numbers.clear()
+                operators.clear()
+            elif len(str(result)) > 10:
+                screen["font"] = ("Google Sans Mono", 20)
+            elif operator == "%":
                 list_numbers[1] = result
-                screen_dos["text"] += str(result)
+                secondary_screen["text"] += str(result).replace(".", ",")
                 screen["text"] = "0"
-                operators.remove(character)
-            elif character == "=":
-                screen_dos["text"] += screen["text"] + " " + character + " "
+                operators.remove(operator)
+            elif operator == "=":
+                secondary_screen["text"] += screen["text"] + " " + operator + " "
                 screen["text"] = str(result)
                 list_numbers.clear()
                 operators.clear()
             else:
-                screen_dos["text"] = str(result) + " " + character + " "
+                secondary_screen["text"] = str(result) + " " + operator + " "
                 screen["text"] = "0"
                 list_numbers = [result]
                 operators.remove(operators[0])
