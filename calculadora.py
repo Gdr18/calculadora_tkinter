@@ -10,7 +10,7 @@ window.resizable(False, False)
 
 window.title("Calculadora")
 
-#region SCREENS
+# region SCREENS
 secondary_screen = tkinter.Label(
     window,
     fg="aliceblue",
@@ -22,13 +22,18 @@ secondary_screen = tkinter.Label(
 secondary_screen.grid(row=0, column=0, columnspan=5, sticky="nsew")
 
 screen = tkinter.Label(
-    window, bg="black", fg="aliceblue", text="0", font=("Google Sans Mono", 30), anchor="e"
+    window,
+    bg="black",
+    fg="aliceblue",
+    text="0",
+    font=("Google Sans Mono", 30),
+    anchor="e",
 )
 screen.grid(row=1, column=1, columnspan=5, sticky="nsew")
 
 window.grid_rowconfigure(1, minsize=62)
 
-#region BUTTONS
+# region BUTTONS
 button_options = {
     "width": 7,
     "height": 1,
@@ -140,7 +145,8 @@ equal = tkinter.Button(
 )
 equal.grid(row=6, column=4)
 
-#region FUNCTIONS
+
+# region FUNCTIONS
 def clear(option):
     screen.config(font=("Google Sans Mono", 30), text="0")
     if "=" in secondary_screen["text"]:
@@ -154,7 +160,12 @@ def clear(option):
 def digit_function(digit):
     if len(screen["text"]) == 15 or ("," in screen["text"] and digit == ","):
         return
-    elif screen["text"] == "0" or screen["text"].isalpha() or "No" in screen["text"] or "=" in secondary_screen["text"]:
+    elif (
+        screen["text"] == "0"
+        or screen["text"].isalpha()
+        or "No" in screen["text"]
+        or "=" in secondary_screen["text"]
+    ):
         if digit == ",":
             screen["text"] = "0" + digit
         else:
@@ -172,8 +183,8 @@ def digit_function(digit):
 
 
 def calculate():
-    if "%" in operators:
-        result = list_numbers[operators.index("%")] / 100
+    if operators[1] == "%":
+        result = list_numbers[1] / 100
     elif operators[0] == "+":
         result = list_numbers[0] + list_numbers[1]
     elif operators[0] == "-":
@@ -184,18 +195,36 @@ def calculate():
         try:
             result = list_numbers[0] / list_numbers[1]
         except ZeroDivisionError:
-            return "No se puede dividir entre 0"
+            result = "No se puede dividir entre 0"
 
-    if str(result).endswith(".0"):
-        result = int(result)
+    if result == "No se puede dividir entre 0" and operators[1] == "=":
+        list_numbers.clear()
+        operators.clear()
+        if result == "No se puede dividir entre 0":
+            return result
+
     # TODO: Terminar de implementar la notación científica
     # if len(str(result)) > 15:
     #     result = "{:.2e}".format(result)
-    if "." in str(result) and not "%" in operators:
+
+    if str(result).endswith(".0"):
+        result = int(result)
+
+    if operators[1] == "%":
+        list_numbers[1] = result
+        operators.remove(operators[1])
+    elif operators[1] != "=":
+        list_numbers[0] = result
+        list_numbers.remove(list_numbers[1])
+
+    if "." in str(result):
         result = str(result).replace(".", ",")
     else:
         result = str(result)
-   
+
+    if len(result) > 10:
+        screen["font"] = ("Google Sans Mono", 20)
+
     print(result, "calculate")
 
     return result
@@ -208,7 +237,7 @@ def operator_function(operator):
     elif "No" in screen["text"] or screen["text"].isalpha():
         screen["text"] = "Error"
     elif operator == "+/-":
-        if screen["text"] != "0" and not "No" in screen["text"] and not screen["text"].isalpha():
+        if screen["text"] != "0":
             if "-" in screen["text"]:
                 screen["text"] = screen["text"].replace("-", "")
             else:
@@ -236,25 +265,15 @@ def operator_function(operator):
             if result == "No se puede dividir entre 0":
                 secondary_screen["text"] = ""
                 screen.config(font=("Google Sans Mono", 15), text=result)
-                list_numbers.clear()
-                operators.clear()
-            elif len(str(result)) > 10:
-                screen["font"] = ("Google Sans Mono", 20)
             elif operator == "%":
-                list_numbers[1] = result
-                secondary_screen["text"] += str(result).replace(".", ",")
+                secondary_screen["text"] += result
                 screen["text"] = "0"
-                operators.remove(operator)
             elif operator == "=":
                 secondary_screen["text"] += screen["text"] + " " + operator + " "
-                screen["text"] = str(result)
-                list_numbers.clear()
-                operators.clear()
+                screen["text"] = result
             else:
-                secondary_screen["text"] = str(result) + " " + operator + " "
+                secondary_screen["text"] = result + " " + operator + " "
                 screen["text"] = "0"
-                list_numbers = [result]
-                operators.remove(operators[0])
 
             print(list_numbers, "list_numbers despues de calculate, operator_function")
             print(operators, "operators despues de calculate, operator_function")
