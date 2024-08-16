@@ -27,31 +27,30 @@ else:
     fg = "#000000"
 
 
-def enter_operators_focus_numbers(event):
+def enter_operators_focus_leave_numbers(event):
     if is_dark_mode():
         event.widget["background"] = "#3E3A3B"
     else:
-        event.widget["background"] = "#F9F9F9"
+        event.widget["background"] = "#FFFFFF"
 
-
-def enter_numbers_focus_operators(event):
+def enter_numbers_focus_leave_operators(event):
     if is_dark_mode():
         event.widget["background"] = "#353132"
     else:
         event.widget["background"] = "#F9F9F9"
 
-
 def hover_operators(operators):
     for button in operators:
-
-        button.bind("<Enter>", enter_operators_focus_numbers)
-        button.bind("<FocusIn>", enter_numbers_focus_operators)
+        button.bind("<Enter>", enter_operators_focus_leave_numbers)
+        # button.bind("<Button-1>", enter_operators_focus_leave_numbers)
+        button.bind("<Leave>", enter_numbers_focus_leave_operators)
 
 
 def hover_numbers(numbers):
     for button in numbers:
-        button.bind("<Enter>", enter_numbers_focus_operators)
-        button.bind("<FocusIn>", enter_operators_focus_numbers)
+        button.bind("<Enter>", enter_numbers_focus_leave_operators)
+        # button.bind("<Button-1>", enter_numbers_focus_leave_operators)
+        button.bind("<Leave>", enter_operators_focus_leave_numbers)
 
 
 window = tkinter.Tk()
@@ -131,7 +130,7 @@ seven = tkinter.Button(
     **button_options,
     bg=bg_numbers,
     text="7",
-    command=lambda: digit_function("7")
+    command=lambda: number_function("7")
 )
 seven.grid(row=3, column=1)
 
@@ -140,7 +139,7 @@ eight = tkinter.Button(
     **button_options,
     bg=bg_numbers,
     text="8",
-    command=lambda: digit_function("8")
+    command=lambda: number_function("8")
 )
 eight.grid(row=3, column=2)
 
@@ -149,7 +148,7 @@ nine = tkinter.Button(
     **button_options,
     bg=bg_numbers,
     text="9",
-    command=lambda: digit_function("9")
+    command=lambda: number_function("9")
 )
 nine.grid(row=3, column=3)
 
@@ -167,7 +166,7 @@ four = tkinter.Button(
     **button_options,
     bg=bg_numbers,
     text="4",
-    command=lambda: digit_function("4")
+    command=lambda: number_function("4")
 )
 four.grid(row=4, column=1)
 
@@ -176,7 +175,7 @@ five = tkinter.Button(
     **button_options,
     bg=bg_numbers,
     text="5",
-    command=lambda: digit_function("5")
+    command=lambda: number_function("5")
 )
 five.grid(row=4, column=2)
 
@@ -185,7 +184,7 @@ six = tkinter.Button(
     **button_options,
     bg=bg_numbers,
     text="6",
-    command=lambda: digit_function("6")
+    command=lambda: number_function("6")
 )
 six.grid(row=4, column=3)
 
@@ -203,7 +202,7 @@ one = tkinter.Button(
     **button_options,
     bg=bg_numbers,
     text="1",
-    command=lambda: digit_function("1")
+    command=lambda: number_function("1")
 )
 one.grid(row=5, column=1)
 
@@ -212,7 +211,7 @@ two = tkinter.Button(
     **button_options,
     bg=bg_numbers,
     text="2",
-    command=lambda: digit_function("2")
+    command=lambda: number_function("2")
 )
 two.grid(row=5, column=2)
 
@@ -221,7 +220,7 @@ three = tkinter.Button(
     **button_options,
     bg=bg_numbers,
     text="3",
-    command=lambda: digit_function("3")
+    command=lambda: number_function("3")
 )
 three.grid(row=5, column=3)
 
@@ -248,7 +247,7 @@ zero = tkinter.Button(
     **button_options,
     bg=bg_numbers,
     text="0",
-    command=lambda: digit_function("0")
+    command=lambda: number_function("0")
 )
 zero.grid(row=6, column=2)
 
@@ -257,7 +256,7 @@ dot = tkinter.Button(
     **button_options,
     bg=bg_numbers,
     text=".",
-    command=lambda: digit_function(",")
+    command=lambda: number_function(",")
 )
 dot.grid(row=6, column=3)
 
@@ -270,7 +269,8 @@ equal = tkinter.Button(
 )
 equal.grid(row=6, column=4)
 equal.bind("<Enter>", lambda event: event.widget.config(bg="#A174A8"))
-equal.bind("<FocusIn>", lambda event: event.widget.config(bg="#DB9EE5"))
+# equal.bind("<Button-1>", lambda event: event.widget.config(bg="#DB9EE5"))
+equal.bind("<Leave>", lambda event: event.widget.config(bg="#DB9EE5"))
 
 
 numbers = [seven, eight, nine, four, five, six, one, two, three, plus_minus, zero, dot]
@@ -293,9 +293,17 @@ def clear(option):
         secondary_screen["text"] = ""
 
 
-def digit_function(digit):
-    if len(screen["text"]) == 20 or (
-        "," in screen["text"] and digit == "," and not "=" in secondary_screen["text"]
+def number_function(number):
+    if number == "+/-":
+        if screen["text"] != "0":
+            if "-" in screen["text"]:
+                screen["text"] = screen["text"].replace("-", "")
+            else:
+                screen["text"] = "-" + screen["text"]
+            if screen["text"].endswith("..."):
+                list_numbers[0] = -1 * list_numbers[0]
+    elif len(screen["text"]) >= 20 or (
+        "," in screen["text"] and number == "," and not "=" in secondary_screen["text"]
     ):
         return
     elif (
@@ -304,12 +312,12 @@ def digit_function(digit):
         or "No" in screen["text"]
         or "=" in secondary_screen["text"]
     ):
-        if digit == ",":
-            screen["text"] = "0" + digit
+        if number == ",":
+            screen["text"] = "0" + number
         else:
-            screen["text"] = digit
+            screen["text"] = number
     else:
-        screen["text"] += digit
+        screen["text"] += number
 
     if "=" in secondary_screen["text"]:
         secondary_screen["text"] = ""
@@ -374,14 +382,6 @@ def operator_function(operator):
         return
     elif "No" in screen["text"] or screen["text"].isalpha():
         screen["text"] = "Error"
-    elif operator == "+/-":
-        if screen["text"] != "0":
-            if "-" in screen["text"]:
-                screen["text"] = screen["text"].replace("-", "")
-            else:
-                screen["text"] = "-" + screen["text"]
-            if screen["text"].endswith("..."):
-                list_numbers[0] = -1 * list_numbers[0]
     elif operator == "%" and len(operators) == 0:
         screen["text"] = "0"
         if "=" in secondary_screen["text"]:
