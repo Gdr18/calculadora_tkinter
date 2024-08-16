@@ -1,20 +1,76 @@
 import tkinter
+import winreg
+
+
+def is_dark_mode():
+    try:
+        registry = winreg.ConnectRegistry(None, winreg.HKEY_CURRENT_USER)
+        key = winreg.OpenKey(
+            registry, r"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"
+        )
+        value, _ = winreg.QueryValueEx(key, "AppsUseLightTheme")
+        winreg.CloseKey(key)
+        return value == 0
+    except:
+        return False
+
+
+if is_dark_mode():
+    bg_window = "#221F21"
+    bg_numbers = "#3E3A3B"
+    bg_operators = "#353132"
+    fg = "#ffffff"
+else:
+    bg_window = "#F3F3F3"
+    bg_numbers = "#FFFFFF"
+    bg_operators = "#F9F9F9"
+    fg = "#000000"
+
+
+def enter_operators_focus_numbers(event):
+    if is_dark_mode():
+        event.widget["background"] = "#3E3A3B"
+    else:
+        event.widget["background"] = "#F9F9F9"
+
+
+def enter_numbers_focus_operators(event):
+    if is_dark_mode():
+        event.widget["background"] = "#353132"
+    else:
+        event.widget["background"] = "#F9F9F9"
+
+
+def hover_operators(operators):
+    for button in operators:
+
+        button.bind("<Enter>", enter_operators_focus_numbers)
+        button.bind("<FocusIn>", enter_numbers_focus_operators)
+
+
+def hover_numbers(numbers):
+    for button in numbers:
+        button.bind("<Enter>", enter_numbers_focus_operators)
+        button.bind("<FocusIn>", enter_operators_focus_numbers)
+
 
 window = tkinter.Tk()
 
-list_numbers = []
-operators = []
+window.iconbitmap("assets/Calculator_30001.ico")
 
 window.geometry("340x390")
 window.resizable(False, False)
-
 window.title("Calculadora")
+
+window.grid_rowconfigure(1, minsize=62)
+
+window.configure(bg=bg_window)
 
 # region SCREENS
 secondary_screen = tkinter.Label(
     window,
-    fg="aliceblue",
-    bg="black",
+    fg=fg,
+    bg=bg_window,
     text="",
     font=("Google Sans Mono", 14),
     anchor="e",
@@ -23,146 +79,228 @@ secondary_screen.grid(row=0, column=0, columnspan=5, sticky="nsew")
 
 screen = tkinter.Label(
     window,
-    bg="black",
-    fg="aliceblue",
+    bg=bg_window,
+    fg=fg,
     text="0",
     font=("Google Sans Mono", 30),
     anchor="e",
 )
 screen.grid(row=1, column=1, columnspan=5, sticky="nsew")
 
-window.grid_rowconfigure(1, minsize=62)
-
 # region BUTTONS
 button_options = {
     "width": 7,
     "height": 1,
     "pady": 8,
-    "bg": "#494443",
-    "fg": "aliceblue",
+    "fg": fg,
     "bd": 1,
     "cursor": "hand2",
     "font": ("Google Sans Mono", 14),
 }
 
 percentage = tkinter.Button(
-    window, **button_options, text="%", command=lambda: operator_function("%")
+    window,
+    **button_options,
+    bg=bg_operators,
+    text="%",
+    command=lambda: operator_function("%")
 )
 percentage.grid(row=2, column=1)
 
 remove = tkinter.Button(
-    window, **button_options, text="CE", command=lambda: clear("CE")
+    window, **button_options, bg=bg_operators, text="CE", command=lambda: clear("CE")
 )
 remove.grid(row=2, column=2)
 
 remove_all = tkinter.Button(
-    window, **button_options, text="C", command=lambda: clear("C")
+    window, **button_options, bg=bg_operators, text="C", command=lambda: clear("C")
 )
 remove_all.grid(row=2, column=3)
 
 division = tkinter.Button(
-    window, **button_options, text="/", command=lambda: operator_function("/")
+    window,
+    **button_options,
+    bg=bg_operators,
+    text="/",
+    command=lambda: operator_function("/")
 )
 division.grid(row=2, column=4)
 
 seven = tkinter.Button(
-    window, **button_options, text="7", command=lambda: digit_function("7")
+    window,
+    **button_options,
+    bg=bg_numbers,
+    text="7",
+    command=lambda: digit_function("7")
 )
 seven.grid(row=3, column=1)
 
 eight = tkinter.Button(
-    window, **button_options, text="8", command=lambda: digit_function("8")
+    window,
+    **button_options,
+    bg=bg_numbers,
+    text="8",
+    command=lambda: digit_function("8")
 )
 eight.grid(row=3, column=2)
 
 nine = tkinter.Button(
-    window, **button_options, text="9", command=lambda: digit_function("9")
+    window,
+    **button_options,
+    bg=bg_numbers,
+    text="9",
+    command=lambda: digit_function("9")
 )
 nine.grid(row=3, column=3)
 
 multi = tkinter.Button(
-    window, **button_options, text="x", command=lambda: operator_function("x")
+    window,
+    **button_options,
+    bg=bg_operators,
+    text="x",
+    command=lambda: operator_function("x")
 )
 multi.grid(row=3, column=4)
 
 four = tkinter.Button(
-    window, **button_options, text="4", command=lambda: digit_function("4")
+    window,
+    **button_options,
+    bg=bg_numbers,
+    text="4",
+    command=lambda: digit_function("4")
 )
 four.grid(row=4, column=1)
 
 five = tkinter.Button(
-    window, **button_options, text="5", command=lambda: digit_function("5")
+    window,
+    **button_options,
+    bg=bg_numbers,
+    text="5",
+    command=lambda: digit_function("5")
 )
 five.grid(row=4, column=2)
 
 six = tkinter.Button(
-    window, **button_options, text="6", command=lambda: digit_function("6")
+    window,
+    **button_options,
+    bg=bg_numbers,
+    text="6",
+    command=lambda: digit_function("6")
 )
 six.grid(row=4, column=3)
 
 minus = tkinter.Button(
-    window, **button_options, text="-", command=lambda: operator_function("-")
+    window,
+    **button_options,
+    bg=bg_operators,
+    text="-",
+    command=lambda: operator_function("-")
 )
 minus.grid(row=4, column=4)
 
 one = tkinter.Button(
-    window, **button_options, text="1", command=lambda: digit_function("1")
+    window,
+    **button_options,
+    bg=bg_numbers,
+    text="1",
+    command=lambda: digit_function("1")
 )
 one.grid(row=5, column=1)
 
 two = tkinter.Button(
-    window, **button_options, text="2", command=lambda: digit_function("2")
+    window,
+    **button_options,
+    bg=bg_numbers,
+    text="2",
+    command=lambda: digit_function("2")
 )
 two.grid(row=5, column=2)
 
 three = tkinter.Button(
-    window, **button_options, text="3", command=lambda: digit_function("3")
+    window,
+    **button_options,
+    bg=bg_numbers,
+    text="3",
+    command=lambda: digit_function("3")
 )
 three.grid(row=5, column=3)
 
 plus = tkinter.Button(
-    window, **button_options, text="+", command=lambda: operator_function("+")
+    window,
+    **button_options,
+    bg=bg_operators,
+    text="+",
+    command=lambda: operator_function("+")
 )
 plus.grid(row=5, column=4)
 
 plus_minus = tkinter.Button(
-    window, **button_options, text="+/-", command=lambda: operator_function("+/-")
+    window,
+    **button_options,
+    bg=bg_numbers,
+    text="+/-",
+    command=lambda: operator_function("+/-")
 )
 plus_minus.grid(row=6, column=1)
 
 zero = tkinter.Button(
-    window, **button_options, text="0", command=lambda: digit_function("0")
+    window,
+    **button_options,
+    bg=bg_numbers,
+    text="0",
+    command=lambda: digit_function("0")
 )
 zero.grid(row=6, column=2)
 
 dot = tkinter.Button(
-    window, **button_options, text=".", command=lambda: digit_function(",")
+    window,
+    **button_options,
+    bg=bg_numbers,
+    text=".",
+    command=lambda: digit_function(",")
 )
 dot.grid(row=6, column=3)
 
 equal = tkinter.Button(
-    window, **button_options, text="=", command=lambda: operator_function("=")
+    window,
+    **button_options,
+    bg="#DB9EE5",
+    text="=",
+    command=lambda: operator_function("=")
 )
 equal.grid(row=6, column=4)
+equal.bind("<Enter>", lambda event: event.widget.config(bg="#A174A8"))
+equal.bind("<FocusIn>", lambda event: event.widget.config(bg="#DB9EE5"))
+
+
+numbers = [seven, eight, nine, four, five, six, one, two, three, plus_minus, zero, dot]
+operators = [percentage, remove, remove_all, division, multi, minus, plus]
+hover_numbers(numbers)
+hover_operators(operators)
+
+list_numbers = []
+operators = []
 
 
 # region FUNCTIONS
 def clear(option):
     screen.config(font=("Google Sans Mono", 30), text="0")
-    if "=" in secondary_screen["text"]:
-        secondary_screen["text"] = ""
     if option == "C":
         secondary_screen["text"] = ""
         list_numbers.clear()
         operators.clear()
+    elif "=" in secondary_screen["text"]:
+        secondary_screen["text"] = ""
 
 
 def digit_function(digit):
-    if len(screen["text"]) == 15 or ("," in screen["text"] and digit == ","):
+    if len(screen["text"]) == 20 or (
+        "," in screen["text"] and digit == "," and not "=" in secondary_screen["text"]
+    ):
         return
     elif (
         screen["text"] == "0"
-        or screen["text"].isalpha()
+        or "Error" in screen["text"]
         or "No" in screen["text"]
         or "=" in secondary_screen["text"]
     ):
@@ -176,14 +314,15 @@ def digit_function(digit):
     if "=" in secondary_screen["text"]:
         secondary_screen["text"] = ""
 
-    if len(screen["text"]) > 10:
+    if len(screen["text"]) > 13:
         screen["font"] = ("Google Sans Mono", 20)
     else:
         screen["font"] = ("Google Sans Mono", 30)
 
 
 def calculate():
-    if operators[1] == "%":
+    global list_numbers
+    if "%" in operators:
         result = list_numbers[1] / 100
     elif operators[0] == "+":
         result = list_numbers[0] + list_numbers[1]
@@ -197,28 +336,27 @@ def calculate():
         except ZeroDivisionError:
             result = "No se puede dividir entre 0"
 
-    if result == "No se puede dividir entre 0" and operators[1] == "=":
-        list_numbers.clear()
-        operators.clear()
-        if result == "No se puede dividir entre 0":
-            return result
-
-    # TODO: Terminar de implementar la notación científica
-    # if len(str(result)) > 15:
-    #     result = "{:.2e}".format(result)
-
     if str(result).endswith(".0"):
         result = int(result)
 
-    if operators[1] == "%":
+    if "%" in operators:
         list_numbers[1] = result
         operators.remove(operators[1])
-    elif operators[1] != "=":
+    elif not "=" in operators and result != "No se puede dividir entre 0":
         list_numbers[0] = result
         list_numbers.remove(list_numbers[1])
+        operators.remove(operators[0])
+    else:
+        operators.clear()
+        if result == "No se puede dividir entre 0":
+            list_numbers.clear()
+            return result
+        list_numbers = [result]
 
     if "." in str(result):
         result = str(result).replace(".", ",")
+    elif len(str(result)) > 20:
+        result = str(result)[:18] + "..."
     else:
         result = str(result)
 
@@ -242,12 +380,21 @@ def operator_function(operator):
                 screen["text"] = screen["text"].replace("-", "")
             else:
                 screen["text"] = "-" + screen["text"]
+            if screen["text"].endswith("..."):
+                list_numbers[0] = -1 * list_numbers[0]
     elif operator == "%" and len(operators) == 0:
         screen["text"] = "0"
         if "=" in secondary_screen["text"]:
             secondary_screen["text"] = ""
-    elif operator == "=" and len(operators) == 0:
+    elif (
+        (operator == "=" and len(operators) == 0)
+        or screen["text"].endswith("...")
+        or ("=" in secondary_screen["text"] and len(list_numbers) != 0)
+    ):
         secondary_screen["text"] = screen["text"] + " " + operator + " "
+        if operator != "=":
+            operators.append(operator)
+            screen["text"] = "0"
     else:
         if "," in screen["text"]:
             list_numbers.append(float(screen["text"].replace(",", ".")))
@@ -270,6 +417,8 @@ def operator_function(operator):
                 screen["text"] = "0"
             elif operator == "=":
                 secondary_screen["text"] += screen["text"] + " " + operator + " "
+                if len(secondary_screen["text"]) > 30:
+                    secondary_screen["text"] = "..." + secondary_screen["text"][-27:]
                 screen["text"] = result
             else:
                 secondary_screen["text"] = result + " " + operator + " "
