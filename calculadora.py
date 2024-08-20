@@ -286,7 +286,7 @@ for button in numbers_buttons:
 # region FUNCTIONS
 
 list_numbers = []
-operators = []
+list_operators = []
 
 
 def clear(option):
@@ -294,7 +294,7 @@ def clear(option):
     if option == "C":
         secondary_screen["text"] = ""
         list_numbers.clear()
-        operators.clear()
+        list_operators.clear()
     elif "=" in secondary_screen["text"]:
         secondary_screen["text"] = ""
 
@@ -341,15 +341,15 @@ def number_function(number):
 
 def calculate():
     global list_numbers
-    if "%" in operators:
+    if "%" in list_operators:
         result = list_numbers[1] / 100
-    elif operators[0] == "+":
+    elif list_operators[0] == "+":
         result = list_numbers[0] + list_numbers[1]
-    elif operators[0] == "-":
+    elif list_operators[0] == "-":
         result = list_numbers[0] - list_numbers[1]
-    elif operators[0] == "x":
+    elif list_operators[0] == "x":
         result = list_numbers[0] * list_numbers[1]
-    elif operators[0] == "/":
+    elif list_operators[0] == "/":
         try:
             result = list_numbers[0] / list_numbers[1]
         except ZeroDivisionError:
@@ -358,15 +358,15 @@ def calculate():
     if str(result).endswith(".0"):
         result = int(result)
 
-    if "%" in operators:
+    if "%" in list_operators:
         list_numbers[1] = result
-        operators.remove(operators[1])
-    elif not "=" in operators and result != "No se puede dividir entre 0":
+        list_operators.remove(list_operators[1])
+    elif not "=" in list_operators and result != "No se puede dividir entre 0":
         list_numbers[0] = result
         list_numbers.remove(list_numbers[1])
-        operators.remove(operators[0])
+        list_operators.remove(list_operators[0])
     else:
-        operators.clear()
+        list_operators.clear()
         if result == "No se puede dividir entre 0":
             list_numbers.clear()
             return result
@@ -391,18 +391,18 @@ def operator_function(operator):
         return
     elif "No" in screen["text"] or screen["text"].isalpha():
         screen["text"] = "Error"
-    elif operator == "%" and len(operators) == 0:
+    elif operator == "%" and len(list_operators) == 0:
         screen["text"] = "0"
         if "=" in secondary_screen["text"]:
             secondary_screen["text"] = ""
     elif (
-        (operator == "=" and len(operators) == 0)
+        (operator == "=" and len(list_operators) == 0)
         or screen["text"].endswith("...")
         or ("=" in secondary_screen["text"] and len(list_numbers) != 0)
     ):
         secondary_screen["text"] = screen["text"] + " " + operator + " "
         if operator != "=":
-            operators.append(operator)
+            list_operators.append(operator)
             screen["text"] = "0"
     else:
         formatting_screen = screen["text"].replace(".", "")
@@ -411,8 +411,8 @@ def operator_function(operator):
         else:
             list_numbers.append(int(formatting_screen))
         print(list_numbers, "list_numbers cuando se agrega, operator_function")
-        operators.append(operator)
-        print(operators, "operators cuando se agrega, operator_function")
+        list_operators.append(operator)
+        print(list_operators, "list_operators cuando se agrega, operator_function")
 
         if len(list_numbers) == 1:
             secondary_screen["text"] = screen["text"] + " " + operator + " "
@@ -435,7 +435,7 @@ def operator_function(operator):
                 screen["text"] = "0"
 
             print(list_numbers, "list_numbers despues de calculate, operator_function")
-            print(operators, "operators despues de calculate, operator_function")
+            print(list_operators, "list_operators despues de calculate, operator_function")
 
 
 window.mainloop()
