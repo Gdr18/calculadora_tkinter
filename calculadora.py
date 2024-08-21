@@ -59,6 +59,8 @@ window.grid_rowconfigure(1, minsize=62)
 
 window.configure(bg=bg_window)
 
+# Falta aplicar el color del texto de window
+
 # region SCREENS
 secondary_screen = tkinter.Label(
     window,
