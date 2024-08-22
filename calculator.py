@@ -12,7 +12,7 @@ window = tkinter.Tk()
 
 window.iconbitmap("assets/Calculator_30001.ico")
 
-window.geometry("340x390")
+window.geometry("350x390")
 window.resizable(False, False)
 window.title("Calculadora")
 
@@ -32,27 +32,32 @@ secondary_screen = tkinter.Label(
 )
 secondary_screen.grid(row=0, column=0, columnspan=5, sticky="nsew")
 
-screen = tkinter.Label(
+screen = tkinter.Entry(
     window,
     bg=theme.bg_window,
     fg=theme.fg,
-    text="0",
     font=("Google Sans Mono", 30),
-    anchor="e",
+    justify="right",
+    bd=0,
+    width=10,
 )
 screen.grid(row=1, column=1, columnspan=5, sticky="nsew")
+
+screen.insert(0, "0")
 
 
 calculator = Calculator(screen, secondary_screen)
 
 
+window.bind("<Key>", calculator.key_pressed)
+
 # region BUTTONS
 button_options = {
     "width": 7,
     "height": 1,
-    "pady": 8,
+    "pady": 7,
     "fg": theme.fg,
-    "bd": 1,
+    "bd": 0,
     "cursor": "hand2",
     "font": ("Google Sans Mono", 14),
     "activeforeground": theme.fg,
@@ -236,6 +241,11 @@ numbers_buttons = [
 ]
 operators_buttons = [percentage, remove, remove_all, division, multi, minus, plus]
 
+all_buttons = numbers_buttons + operators_buttons + [equal]
+
+for button in all_buttons:
+    button.grid(padx=2, pady=2)
+
 for button in operators_buttons:
     button.config(bg=theme.bg_operators, activebackground=theme.actbg_operators)
     button.bind("<Enter>", theme.enter_operators_leave_numbers)
@@ -246,7 +256,6 @@ for button in numbers_buttons:
     button.config(bg=theme.bg_numbers, activebackground=theme.actbg_numbers)
     button.bind("<Enter>", theme.enter_numbers_leave_operators)
     button.bind("<Leave>", theme.enter_operators_leave_numbers)
-
 
 if __name__ == "__main__":
     window.mainloop()
