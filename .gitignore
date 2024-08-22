@@ -1,2 +1,3 @@
-calculadora_SOLID.py
-models.py
+/__pycache__/
+calculadora.py
+.gitignore
