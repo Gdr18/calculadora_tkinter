@@ -73,12 +73,12 @@ percentage = tkinter.Button(
 percentage.grid(row=2, column=1)
 
 remove = tkinter.Button(
-    window, **button_options, bg=theme.bg_operators, text="CE", command=lambda: calculator.clear_screen("CE")
+    window, **button_options, bg=theme.bg_operators, text="CE", command=lambda: calculator.clear("CE")
 )
 remove.grid(row=2, column=2)
 
 remove_all = tkinter.Button(
-    window, **button_options, bg=theme.bg_operators, text="C", command=lambda: calculator.clear_screen("C")
+    window, **button_options, bg=theme.bg_operators, text="C", command=lambda: calculator.clear("C")
 )
 remove_all.grid(row=2, column=3)
 
