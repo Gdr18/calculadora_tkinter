@@ -118,7 +118,7 @@ multi = tkinter.Button(
     window,
     **button_options,
     text="x",
-    command=lambda: calculator.operator_function("x"),
+    command=lambda: calculator.operator_function("*"),
 )
 multi.grid(row=3, column=4)
 
@@ -213,15 +213,15 @@ dot.grid(row=6, column=3)
 equal = tkinter.Button(
     window,
     **button_options,
-    bg="#DB9EE5",
+    bg="#B57EFF",
     text="=",
-    activebackground="#DB9EE5",
+    activebackground="#B57EFF",
     command=lambda: calculator.operator_function("="),
 )
 equal.grid(row=6, column=4)
 
-equal.bind("<Enter>", lambda event: event.widget.config(bg="#A174A8"))
-equal.bind("<Leave>", lambda event: event.widget.config(bg="#DB9EE5"))
+equal.bind("<Enter>", lambda event: event.widget.config(bg="#A35EFF"))
+equal.bind("<Leave>", lambda event: event.widget.config(bg="#B57EFF"))
 
 
 # region BUTTONS CONFIG

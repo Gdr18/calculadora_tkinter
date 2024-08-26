@@ -6,24 +6,17 @@ class Calculator:
         self.screen = screen
         self.secondary_screen = secondary_screen
 
-    def clear_screen(self):
-        self.screen.delete(0, "end")
-        self.screen.insert(0, "0")
-        self.count = 1
-
-    def key_pressed(self, event):
-        allowed_values = "0123456789,"
-        allowed_operators = "+-*/%="
-        if event.char in allowed_values:
-            self.modifiying_screen(event.char)
-        elif event.char in allowed_operators:
-            self.operator_function(event.char)
-
     def checking_font(self):
         if len(self.screen.get()) > 13:
             self.screen["font"] = ("Google Sans Mono", 20)
         else:
             self.screen["font"] = ("Google Sans Mono", 30)
+
+    def clear_screen(self):
+        self.screen.delete(0, "end")
+        self.screen.insert(0, "0")
+        self.count = 1
+        self.checking_font()
 
     def clear(self, option):
         self.clear_screen()
@@ -33,12 +26,52 @@ class Calculator:
             self.list_operators.clear()
         elif "=" in self.secondary_screen["text"]:
             self.secondary_screen["text"] = ""
-        self.checking_font()
-    
+
+    def formatting_screen_with_dots(self):
+        text_without_dots = self.screen.get().replace(".", "")
+        self.count -= self.screen.get().count(".")
+        self.screen.delete(0, "end")
+        self.screen.insert(0, "{:,}".format(int(text_without_dots)).replace(",", "."))
+        self.count += "{:,}".format(int(text_without_dots)).replace(",", ".").count(".")
+
+    def key_pressed(self, event):
+        allowed_values = ("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ",")
+        allowed_operators = ("+", "-", "*", "/", "%", "=")
+        if event.char in allowed_values:
+            print(event.char, "valores permitidos")
+            self.modifiying_screen(event.char)
+        elif event.char in allowed_operators:
+            print(event.char, "operadores permitidos")
+            self.operator_function(event.char)
+        elif event.keysym == "Return":
+            print(event.keysym, "Return")
+            self.operator_function("=")
+        elif event.keysym == "BackSpace":
+            print(event.keysym, "BackSpace")
+            if (
+                self.screen.get() == ("Error" or "No se puede dividir entre 0")
+                or self.screen.get().endswith("...")
+                or "=" in self.secondary_screen["text"]
+            ):
+                self.clear("C")
+            elif self.count == 1:
+                self.clear_screen()
+            else:
+                self.screen.delete(self.count - 1)
+                self.count -= 1
+                if "." in self.screen.get() and not "," in self.screen.get():
+                    self.formatting_screen_with_dots()
+            self.checking_font()
+
+        print(self.count, "count")
 
     def modifiying_screen(self, value):
         if value == "+/-":
-            if self.screen.get() != "0" and not "Error" in self.screen.get() and not "No" in self.screen.get():
+            if (
+                self.screen.get() != "0"
+                and not "Error" in self.screen.get()
+                and not "No" in self.screen.get()
+            ):
                 if "-" in self.screen.get():
                     self.screen.delete(0)
                     self.count -= 1
@@ -46,11 +79,13 @@ class Calculator:
                     screen_text = self.screen.get()
                     self.screen.delete(0, "end")
                     self.screen.insert(0, "-" + screen_text)
-                    self.count += 1 
+                    self.count += 1
                 if self.screen.get().endswith("..."):
                     self.list_numbers[0] = -1 * self.list_numbers[0]
         elif len(self.screen.get()) >= 20 or (
-        "," in self.screen.get() and value == "," and not "=" in self.secondary_screen["text"]
+            "," in self.screen.get()
+            and value == ","
+            and not "=" in self.secondary_screen["text"]
         ):
             return
         elif (
@@ -72,22 +107,17 @@ class Calculator:
             self.screen.insert(self.count, value)
             self.count += 1
             if len(self.screen.get()) > 3 and not "," in self.screen.get():
-                text_without_dots = self.screen.get().replace(".", "")
-                self.count -= self.screen.get().count(".")
-                self.screen.delete(0, "end")
-                self.screen.insert(0, "{:,}".format(int(text_without_dots)).replace(",", "."))
-                self.count += "{:,}".format(int(text_without_dots)).replace(",", ".").count(".")
+                self.formatting_screen_with_dots()
 
         if "=" in self.secondary_screen["text"]:
             self.secondary_screen["text"] = ""
             self.list_numbers.clear()
-        
-        self.checking_font()
 
+        self.checking_font()
 
     def calculate(self):
         if "%" in self.list_operators:
-            if self.list_operators[0] == "x":
+            if self.list_operators[0] == "*":
                 result = self.list_numbers[1] / 100
             else:
                 result = self.list_numbers[0] * self.list_numbers[1] / 100
@@ -95,7 +125,7 @@ class Calculator:
             result = self.list_numbers[0] + self.list_numbers[1]
         elif self.list_operators[0] == "-":
             result = self.list_numbers[0] - self.list_numbers[1]
-        elif self.list_operators[0] == "x":
+        elif self.list_operators[0] == "*":
             result = self.list_numbers[0] * self.list_numbers[1]
         elif self.list_operators[0] == "/":
             try:
@@ -120,17 +150,19 @@ class Calculator:
                 return result
             self.list_numbers = [result]
 
-        result = "{:,}".format(float(result) if "." in str(result) else int(result)).replace(".", "*").replace(",", ".").replace("*", ",")
+        result = (
+            "{:,}".format(float(result) if "." in str(result) else int(result))
+            .replace(".", "#")
+            .replace(",", ".")
+            .replace("#", ",")
+        )
 
         if len(result) > 20:
             result = result[:18] + "..."
 
-        self.checking_font()
-
         print(result, "calculate")
 
         return result
-
 
     def operator_function(self, operator):
         if self.screen.get().endswith(","):
@@ -143,12 +175,12 @@ class Calculator:
             self.clear_screen()
             if "=" in self.secondary_screen["text"]:
                 self.secondary_screen["text"] = ""
-        elif (
-            (operator == "=" and len(self.list_operators) == 0)
-            or self.screen.get().endswith("...")
-            or ("=" in self.secondary_screen["text"] and len(self.list_numbers) != 0)
+        elif (operator == "=" and len(self.list_operators) == 0) or (
+            "=" in self.secondary_screen["text"] and len(self.list_numbers) != 0
         ):
-            self.secondary_screen["text"] = self.screen.get() + " " + operator + " "
+            self.secondary_screen["text"] = (
+                self.screen.get() + " " + ("x" if operator == "*" else operator) + " "
+            )
             if operator != "=":
                 self.list_operators.append(operator)
                 self.clear_screen()
@@ -159,20 +191,31 @@ class Calculator:
                     self.list_numbers.append(float(formatting_screen.replace(",", ".")))
                 else:
                     self.list_numbers.append(int(formatting_screen))
-                print(self.list_numbers, "list_numbers cuando se agrega, operator_function")
+                print(
+                    self.list_numbers,
+                    "list_numbers cuando se agrega, operator_function",
+                )
                 self.list_operators.append(operator)
-                print(self.list_operators, "list_operators cuando se agrega, operator_function")
+                print(
+                    self.list_operators,
+                    "list_operators cuando se agrega, operator_function",
+                )
 
             if len(self.list_numbers) == 1:
-                self.secondary_screen["text"] = self.screen.get() + " " + operator + " "
+                self.secondary_screen["text"] = (
+                    self.screen.get()
+                    + " "
+                    + ("x" if operator == "*" else operator)
+                    + " "
+                )
                 self.clear_screen()
             else:
                 result = self.calculate()
                 if result == "No se puede dividir entre 0":
                     self.secondary_screen["text"] = ""
-                    self.screen["font"] = ("Google Sans Mono", 15)
                     self.screen.delete(0, "end")
                     self.screen.insert(0, result)
+                    self.screen["font"] = ("Google Sans Mono", 15)
                 elif operator == "%":
                     self.secondary_screen["text"] += result
                     self.clear_screen()
@@ -180,14 +223,27 @@ class Calculator:
                     if self.secondary_screen["text"][-1].isdigit():
                         self.secondary_screen["text"] += " " + operator + " "
                     else:
-                        self.secondary_screen["text"] += self.screen.get() + " " + operator + " "
+                        self.secondary_screen["text"] += (
+                            self.screen.get() + " " + operator + " "
+                        )
                     if len(self.secondary_screen["text"]) > 30:
-                        self.secondary_screen["text"] = "..." + self.secondary_screen["text"][-27:]
+                        self.secondary_screen["text"] = (
+                            "..." + self.secondary_screen["text"][-27:]
+                        )
                     self.screen.delete(0, "end")
                     self.screen.insert(0, result)
+                    self.checking_font()
                 else:
-                    self.secondary_screen["text"] = result + " " + operator + " "
+                    self.secondary_screen["text"] = (
+                        result + " " + ("x" if operator == "*" else operator) + " "
+                    )
                     self.clear_screen()
 
-                print(self.list_numbers, "list_numbers despues de calculate, operator_function")
-                print(self.list_operators, "list_operators despues de calculate, operator_function")
+                print(
+                    self.list_numbers,
+                    "list_numbers despues de calculate, operator_function",
+                )
+                print(
+                    self.list_operators,
+                    "list_operators despues de calculate, operator_function",
+                )
