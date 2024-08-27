@@ -9,10 +9,10 @@ Esta aplicación es una calculadora implementada en Python utilizando la bibliot
 - Manejo de errores y comunicación al usuario de ellos.
 
 ## Directorio
-- */assets*: En este directorio se encuentra '**Calculator_30001.ico**', el icono utilizado para la ventana.
-- *calculator_logic.py*: En este archivo se desarrolla la lógica principal de la aplicación.
-- *calculator.py*: En este archivo se configura la interfaz gráfica de la calculadora y se vinculan los botones a las funciones lógicas definidas en '**calculator_logic.py**'. Además, se aplica el tema visual definido en '**theme_manager.py**'.
-- *theme_manager.py*: En este archivo se desarrolla la lógica para la aplicación de un tema u otro según la configuración del usuario.
+- **/assets**: En este directorio se encuentra '*Calculator_30001.ico*', el icono utilizado para la ventana.
+- **calculator_logic.py**: En este archivo se desarrolla la lógica principal de la aplicación.
+- **calculator.py**: En este archivo se configura la interfaz gráfica de la calculadora y se vinculan los botones a las funciones lógicas definidas en '*calculator_logic.py*'. Además, se aplica el tema visual definido en '*theme_manager.py*'.
+- **theme_manager.py**: En este archivo se desarrolla la lógica para la aplicación de un tema u otro según la configuración del usuario.
 
 ## Requisitos
 
