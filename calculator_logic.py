@@ -178,9 +178,13 @@ class Calculator:
         elif (operator == "=" and len(self.list_operators) == 0) or (
             "=" in self.secondary_screen["text"] and len(self.list_numbers) != 0
         ):
-            self.secondary_screen["text"] = (
-                self.screen.get() + " " + ("x" if operator == "*" else operator) + " "
-            )
+            if operator == "*":
+                print_operator = "x"
+            elif operator == "/":
+                print_operator = "÷"
+            else:
+                print_operator = operator
+            self.secondary_screen["text"] = self.screen.get() + " " + print_operator + " "
             if operator != "=":
                 self.list_operators.append(operator)
                 self.clear_screen()
@@ -202,12 +206,14 @@ class Calculator:
                 )
 
             if len(self.list_numbers) == 1:
-                self.secondary_screen["text"] = (
-                    self.screen.get()
-                    + " "
-                    + ("x" if operator == "*" else operator)
-                    + " "
-                )
+                print("entra en condicional")
+                if operator == "*":
+                    print_operator = "x"
+                elif operator == "/":
+                    print_operator = "÷"
+                else:
+                    print_operator = operator
+                self.secondary_screen["text"] = self.screen.get() + " " + print_operator + " "
                 self.clear_screen()
             else:
                 result = self.calculate()
