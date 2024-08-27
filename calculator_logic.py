@@ -175,21 +175,13 @@ class Calculator:
             self.clear_screen()
             if "=" in self.secondary_screen["text"]:
                 self.secondary_screen["text"] = ""
-        elif (operator == "=" and len(self.list_operators) == 0) or (
-            "=" in self.secondary_screen["text"] and len(self.list_numbers) != 0
-        ):
-            if operator == "*":
-                print_operator = "x"
-            elif operator == "/":
-                print_operator = "÷"
-            else:
-                print_operator = operator
-            self.secondary_screen["text"] = self.screen.get() + " " + print_operator + " "
-            if operator != "=":
-                self.list_operators.append(operator)
-                self.clear_screen()
+        elif operator == "=" and len(self.list_operators) == 0:
+            self.list_operators.append(operator)
+            self.clear_screen()
         else:
-            if not len(self.list_numbers) == 2:
+            if not len(self.list_numbers) == 2 and not (
+                "=" in self.secondary_screen["text"] and len(self.list_numbers) == 1
+            ):
                 formatting_screen = self.screen.get().replace(".", "")
                 if "," in self.screen.get():
                     self.list_numbers.append(float(formatting_screen.replace(",", ".")))
@@ -199,21 +191,25 @@ class Calculator:
                     self.list_numbers,
                     "list_numbers cuando se agrega, operator_function",
                 )
-                self.list_operators.append(operator)
-                print(
-                    self.list_operators,
-                    "list_operators cuando se agrega, operator_function",
-                )
+
+            self.list_operators.append(operator)
+            print(
+                self.list_operators,
+                "list_operators cuando se agrega, operator_function",
+            )
+
+            if operator == "*":
+                print_operator = "x"
+            elif operator == "/":
+                print_operator = "÷"
+            else:
+                print_operator = operator
 
             if len(self.list_numbers) == 1:
                 print("entra en condicional")
-                if operator == "*":
-                    print_operator = "x"
-                elif operator == "/":
-                    print_operator = "÷"
-                else:
-                    print_operator = operator
-                self.secondary_screen["text"] = self.screen.get() + " " + print_operator + " "
+                self.secondary_screen["text"] = (
+                    self.screen.get() + " " + print_operator + " "
+                )
                 self.clear_screen()
             else:
                 result = self.calculate()
@@ -227,10 +223,10 @@ class Calculator:
                     self.clear_screen()
                 elif operator == "=":
                     if self.secondary_screen["text"][-1].isdigit():
-                        self.secondary_screen["text"] += " " + operator + " "
+                        self.secondary_screen["text"] += " " + print_operator + " "
                     else:
                         self.secondary_screen["text"] += (
-                            self.screen.get() + " " + operator + " "
+                            self.screen.get() + " " + print_operator + " "
                         )
                     if len(self.secondary_screen["text"]) > 30:
                         self.secondary_screen["text"] = (
@@ -240,9 +236,7 @@ class Calculator:
                     self.screen.insert(0, result)
                     self.checking_font()
                 else:
-                    self.secondary_screen["text"] = (
-                        result + " " + ("x" if operator == "*" else operator) + " "
-                    )
+                    self.secondary_screen["text"] = result + " " + print_operator + " "
                     self.clear_screen()
 
                 print(
