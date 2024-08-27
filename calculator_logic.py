@@ -39,13 +39,13 @@ class Calculator:
         allowed_operators = ("+", "-", "*", "/", "%", "=")
         if event.char in allowed_values:
             print(event.char, "valores permitidos")
-            self.modifiying_screen(event.char)
+            self.digit_logic(event.char)
         elif event.char in allowed_operators:
             print(event.char, "operadores permitidos")
-            self.operator_function(event.char)
+            self.operator_logic(event.char)
         elif event.keysym == "Return":
             print(event.keysym, "Return")
-            self.operator_function("=")
+            self.operator_logic("=")
         elif event.keysym == "BackSpace":
             print(event.keysym, "BackSpace")
             if (
@@ -65,7 +65,7 @@ class Calculator:
 
         print(self.count, "count")
 
-    def modifiying_screen(self, value):
+    def digit_logic(self, value):
         if value == "+/-":
             if (
                 self.screen.get() != "0"
@@ -164,7 +164,7 @@ class Calculator:
 
         return result
 
-    def operator_function(self, operator):
+    def operator_logic(self, operator):
         if self.screen.get().endswith(","):
             return
         elif "No" in self.screen.get() or self.screen.get().isalpha():
@@ -189,13 +189,13 @@ class Calculator:
                     self.list_numbers.append(int(formatting_screen))
                 print(
                     self.list_numbers,
-                    "list_numbers cuando se agrega, operator_function",
+                    "list_numbers cuando se agrega, operator_logic",
                 )
 
             self.list_operators.append(operator)
             print(
                 self.list_operators,
-                "list_operators cuando se agrega, operator_function",
+                "list_operators cuando se agrega, operator_logic",
             )
 
             if operator == "*":
@@ -241,9 +241,9 @@ class Calculator:
 
                 print(
                     self.list_numbers,
-                    "list_numbers despues de calculate, operator_function",
+                    "list_numbers despues de calculate, operator_logic",
                 )
                 print(
                     self.list_operators,
-                    "list_operators despues de calculate, operator_function",
+                    "list_operators despues de calculate, operator_logic",
                 )

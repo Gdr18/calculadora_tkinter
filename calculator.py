@@ -68,17 +68,25 @@ percentage = tkinter.Button(
     **button_options,
     bg=theme.bg_operators,
     text="%",
-    command=lambda: calculator.operator_function("%"),
+    command=lambda: calculator.operator_logic("%"),
 )
 percentage.grid(row=2, column=1)
 
 remove = tkinter.Button(
-    window, **button_options, bg=theme.bg_operators, text="CE", command=lambda: calculator.clear("CE")
+    window,
+    **button_options,
+    bg=theme.bg_operators,
+    text="CE",
+    command=lambda: calculator.clear("CE"),
 )
 remove.grid(row=2, column=2)
 
 remove_all = tkinter.Button(
-    window, **button_options, bg=theme.bg_operators, text="C", command=lambda: calculator.clear("C")
+    window,
+    **button_options,
+    bg=theme.bg_operators,
+    text="C",
+    command=lambda: calculator.clear("C"),
 )
 remove_all.grid(row=2, column=3)
 
@@ -86,7 +94,7 @@ division = tkinter.Button(
     window,
     **button_options,
     text="/",
-    command=lambda: calculator.operator_function("/"),
+    command=lambda: calculator.operator_logic("/"),
 )
 division.grid(row=2, column=4)
 
@@ -94,7 +102,7 @@ seven = tkinter.Button(
     window,
     **button_options,
     text="7",
-    command=lambda: calculator.modifiying_screen("7"),
+    command=lambda: calculator.digit_logic("7"),
 )
 seven.grid(row=3, column=1)
 
@@ -102,7 +110,7 @@ eight = tkinter.Button(
     window,
     **button_options,
     text="8",
-    command=lambda: calculator.modifiying_screen("8"),
+    command=lambda: calculator.digit_logic("8"),
 )
 eight.grid(row=3, column=2)
 
@@ -110,7 +118,7 @@ nine = tkinter.Button(
     window,
     **button_options,
     text="9",
-    command=lambda: calculator.modifiying_screen("9"),
+    command=lambda: calculator.digit_logic("9"),
 )
 nine.grid(row=3, column=3)
 
@@ -118,7 +126,7 @@ multi = tkinter.Button(
     window,
     **button_options,
     text="x",
-    command=lambda: calculator.operator_function("*"),
+    command=lambda: calculator.operator_logic("*"),
 )
 multi.grid(row=3, column=4)
 
@@ -126,7 +134,7 @@ four = tkinter.Button(
     window,
     **button_options,
     text="4",
-    command=lambda: calculator.modifiying_screen("4"),
+    command=lambda: calculator.digit_logic("4"),
 )
 four.grid(row=4, column=1)
 
@@ -134,7 +142,7 @@ five = tkinter.Button(
     window,
     **button_options,
     text="5",
-    command=lambda: calculator.modifiying_screen("5"),
+    command=lambda: calculator.digit_logic("5"),
 )
 five.grid(row=4, column=2)
 
@@ -142,7 +150,7 @@ six = tkinter.Button(
     window,
     **button_options,
     text="6",
-    command=lambda: calculator.modifiying_screen("6"),
+    command=lambda: calculator.digit_logic("6"),
 )
 six.grid(row=4, column=3)
 
@@ -150,7 +158,7 @@ minus = tkinter.Button(
     window,
     **button_options,
     text="-",
-    command=lambda: calculator.operator_function("-"),
+    command=lambda: calculator.operator_logic("-"),
 )
 minus.grid(row=4, column=4)
 
@@ -158,7 +166,7 @@ one = tkinter.Button(
     window,
     **button_options,
     text="1",
-    command=lambda: calculator.modifiying_screen("1"),
+    command=lambda: calculator.digit_logic("1"),
 )
 one.grid(row=5, column=1)
 
@@ -166,7 +174,7 @@ two = tkinter.Button(
     window,
     **button_options,
     text="2",
-    command=lambda: calculator.modifiying_screen("2"),
+    command=lambda: calculator.digit_logic("2"),
 )
 two.grid(row=5, column=2)
 
@@ -174,7 +182,7 @@ three = tkinter.Button(
     window,
     **button_options,
     text="3",
-    command=lambda: calculator.modifiying_screen("3"),
+    command=lambda: calculator.digit_logic("3"),
 )
 three.grid(row=5, column=3)
 
@@ -182,7 +190,7 @@ plus = tkinter.Button(
     window,
     **button_options,
     text="+",
-    command=lambda: calculator.operator_function("+"),
+    command=lambda: calculator.operator_logic("+"),
 )
 plus.grid(row=5, column=4)
 
@@ -190,7 +198,7 @@ plus_minus = tkinter.Button(
     window,
     **button_options,
     text="+/-",
-    command=lambda: calculator.modifiying_screen("+/-"),
+    command=lambda: calculator.digit_logic("+/-"),
 )
 plus_minus.grid(row=6, column=1)
 
@@ -198,7 +206,7 @@ zero = tkinter.Button(
     window,
     **button_options,
     text="0",
-    command=lambda: calculator.modifiying_screen("0"),
+    command=lambda: calculator.digit_logic("0"),
 )
 zero.grid(row=6, column=2)
 
@@ -206,7 +214,7 @@ dot = tkinter.Button(
     window,
     **button_options,
     text=",",
-    command=lambda: calculator.modifiying_screen(","),
+    command=lambda: calculator.digit_logic(","),
 )
 dot.grid(row=6, column=3)
 
@@ -216,7 +224,7 @@ equal = tkinter.Button(
     bg="#B57EFF",
     text="=",
     activebackground="#B57EFF",
-    command=lambda: calculator.operator_function("="),
+    command=lambda: calculator.operator_logic("="),
 )
 equal.grid(row=6, column=4)
 
