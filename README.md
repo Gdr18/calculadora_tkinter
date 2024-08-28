@@ -51,7 +51,7 @@ Adjunto un tutorial detallado realizado por *Python Simplified*:
 
 o (si tu sistema operativo es Windows)
 
-1. Descarga el instalador que se encuentra en [/installer](/installer).
+1. Descarga el instalador que se encuentra en [/installer/calculadora_v1.0](/installer/calculadora_v1.0). A continuación clica en '*RAW*'.
 2. Ejecutas el instalador, y listo, tendrás el programa instalado en tu equipo.
 
 ## Contribuciones
