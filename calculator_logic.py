@@ -6,6 +6,7 @@ class Calculator:
         self.screen = screen
         self.secondary_screen = secondary_screen
 
+    #region COMMON METHODS
     def checking_font(self):
         if len(self.screen.get()) > 13:
             self.screen["font"] = ("Google Sans Mono", 20)
@@ -18,15 +19,6 @@ class Calculator:
         self.count = 1
         self.checking_font()
 
-    def clear(self, option):
-        self.clear_screen()
-        if option == "C":
-            self.secondary_screen["text"] = ""
-            self.list_numbers.clear()
-            self.list_operators.clear()
-        elif "=" in self.secondary_screen["text"]:
-            self.secondary_screen["text"] = ""
-
     def formatting_screen_with_dots(self):
         text_without_dots = self.screen.get().replace(".", "")
         self.count -= self.screen.get().count(".")
@@ -34,36 +26,62 @@ class Calculator:
         self.screen.insert(0, "{:,}".format(int(text_without_dots)).replace(",", "."))
         self.count += "{:,}".format(int(text_without_dots)).replace(",", ".").count(".")
 
-    def key_pressed(self, event):
-        allowed_values = ("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ",")
-        allowed_operators = ("+", "-", "*", "/", "%", "=")
-        if event.char in allowed_values:
-            print(event.char, "valores permitidos")
-            self.digit_logic(event.char)
-        elif event.char in allowed_operators:
-            print(event.char, "operadores permitidos")
-            self.operator_logic(event.char)
-        elif event.keysym == "Return":
-            print(event.keysym, "Return")
-            self.operator_logic("=")
-        elif event.keysym == "BackSpace":
-            print(event.keysym, "BackSpace")
-            if (
-                self.screen.get() == ("Error" or "No se puede dividir entre 0")
-                or self.screen.get().endswith("...")
-                or "=" in self.secondary_screen["text"]
-            ):
-                self.clear("C")
-            elif self.count == 1:
-                self.clear_screen()
+    def calculate(self):
+        if "%" in self.list_operators:
+            if self.list_operators[0] == "*":
+                result = self.list_numbers[1] / 100
             else:
-                self.screen.delete(self.count - 1)
-                self.count -= 1
-                if "." in self.screen.get() and not "," in self.screen.get():
-                    self.formatting_screen_with_dots()
-            self.checking_font()
+                result = self.list_numbers[0] * self.list_numbers[1] / 100
+        elif self.list_operators[0] == "+":
+            result = self.list_numbers[0] + self.list_numbers[1]
+        elif self.list_operators[0] == "-":
+            result = self.list_numbers[0] - self.list_numbers[1]
+        elif self.list_operators[0] == "*":
+            result = self.list_numbers[0] * self.list_numbers[1]
+        elif self.list_operators[0] == "/":
+            try:
+                result = self.list_numbers[0] / self.list_numbers[1]
+            except ZeroDivisionError:
+                result = "No se puede dividir entre 0"
 
-        print(self.count, "count")
+        if str(result).endswith(".0"):
+            result = int(result)
+
+        if "%" in self.list_operators:
+            self.list_numbers[1] = result
+            self.list_operators.remove(self.list_operators[1])
+        elif not "=" in self.list_operators and result != "No se puede dividir entre 0":
+            self.list_numbers[0] = result
+            self.list_numbers.remove(self.list_numbers[1])
+            self.list_operators.remove(self.list_operators[0])
+        else:
+            self.list_operators.clear()
+            if result == "No se puede dividir entre 0":
+                self.list_numbers.clear()
+                return result
+            self.list_numbers = [result]
+
+        result = (
+            "{:,}".format(float(result) if "." in str(result) else int(result))
+            .replace(".", "#")
+            .replace(",", ".")
+            .replace("#", ",")
+        )
+
+        if len(result) > 20:
+            result = result[:18] + "..."
+
+        return result
+
+    #region CALCULATOR LOGIC METHODS
+    def clear_logic(self, option):
+        self.clear_screen()
+        if option == "C":
+            self.secondary_screen["text"] = ""
+            self.list_numbers.clear()
+            self.list_operators.clear()
+        elif "=" in self.secondary_screen["text"]:
+            self.secondary_screen["text"] = ""
 
     def digit_logic(self, value):
         if value == "+/-":
@@ -115,55 +133,6 @@ class Calculator:
 
         self.checking_font()
 
-    def calculate(self):
-        if "%" in self.list_operators:
-            if self.list_operators[0] == "*":
-                result = self.list_numbers[1] / 100
-            else:
-                result = self.list_numbers[0] * self.list_numbers[1] / 100
-        elif self.list_operators[0] == "+":
-            result = self.list_numbers[0] + self.list_numbers[1]
-        elif self.list_operators[0] == "-":
-            result = self.list_numbers[0] - self.list_numbers[1]
-        elif self.list_operators[0] == "*":
-            result = self.list_numbers[0] * self.list_numbers[1]
-        elif self.list_operators[0] == "/":
-            try:
-                result = self.list_numbers[0] / self.list_numbers[1]
-            except ZeroDivisionError:
-                result = "No se puede dividir entre 0"
-
-        if str(result).endswith(".0"):
-            result = int(result)
-
-        if "%" in self.list_operators:
-            self.list_numbers[1] = result
-            self.list_operators.remove(self.list_operators[1])
-        elif not "=" in self.list_operators and result != "No se puede dividir entre 0":
-            self.list_numbers[0] = result
-            self.list_numbers.remove(self.list_numbers[1])
-            self.list_operators.remove(self.list_operators[0])
-        else:
-            self.list_operators.clear()
-            if result == "No se puede dividir entre 0":
-                self.list_numbers.clear()
-                return result
-            self.list_numbers = [result]
-
-        result = (
-            "{:,}".format(float(result) if "." in str(result) else int(result))
-            .replace(".", "#")
-            .replace(",", ".")
-            .replace("#", ",")
-        )
-
-        if len(result) > 20:
-            result = result[:18] + "..."
-
-        print(result, "calculate")
-
-        return result
-
     def operator_logic(self, operator):
         if self.screen.get().endswith(","):
             return
@@ -187,16 +156,8 @@ class Calculator:
                     self.list_numbers.append(float(formatting_screen.replace(",", ".")))
                 else:
                     self.list_numbers.append(int(formatting_screen))
-                print(
-                    self.list_numbers,
-                    "list_numbers cuando se agrega, operator_logic",
-                )
 
             self.list_operators.append(operator)
-            print(
-                self.list_operators,
-                "list_operators cuando se agrega, operator_logic",
-            )
 
             if operator == "*":
                 print_operator = "x"
@@ -206,7 +167,6 @@ class Calculator:
                 print_operator = operator
 
             if len(self.list_numbers) == 1:
-                print("entra en condicional")
                 self.secondary_screen["text"] = (
                     self.screen.get() + " " + print_operator + " "
                 )
@@ -238,12 +198,3 @@ class Calculator:
                 else:
                     self.secondary_screen["text"] = result + " " + print_operator + " "
                     self.clear_screen()
-
-                print(
-                    self.list_numbers,
-                    "list_numbers despues de calculate, operator_logic",
-                )
-                print(
-                    self.list_operators,
-                    "list_operators despues de calculate, operator_logic",
-                )

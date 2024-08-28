@@ -1,6 +1,5 @@
 import tkinter
 
-
 from calculator_logic import Calculator
 from theme_manager import ThemeManager
 
@@ -10,7 +9,7 @@ theme = ThemeManager()
 
 window = tkinter.Tk()
 
-window.iconbitmap("assets/Calculator_30001.ico")
+window.iconbitmap("assets\Calculator_30001.ico")
 
 window.geometry("350x390")
 window.resizable(False, False)
@@ -48,8 +47,33 @@ screen.insert(0, "0")
 
 calculator = Calculator(screen, secondary_screen)
 
+#region KEYBOARD EVENT HANDLER
+def key_pressed(event):
+    allowed_values = ("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ",")
+    allowed_operators = ("+", "-", "*", "/", "%", "=")
+    if event.char in allowed_values:
+        calculator.digit_logic(event.char)
+    elif event.char in allowed_operators:
+        calculator.operator_logic(event.char)
+    elif event.keysym == "Return":
+        calculator.operator_logic("=")
+    elif event.keysym == "BackSpace":
+        if (
+            calculator.screen.get() == ("Error" or "No se puede dividir entre 0")
+            or calculator.screen.get().endswith("...")
+            or "=" in calculator.secondary_screen["text"]
+        ):
+            calculator.clear_logic("C")
+        elif calculator.count == 1:
+            calculator.clear_screen()
+        else:
+            calculator.screen.delete(calculator.count - 1)
+            calculator.count -= 1
+            if "." in calculator.screen.get() and not "," in calculator.screen.get():
+                calculator.formatting_screen_with_dots()
+        calculator.checking_font()     
 
-window.bind("<Key>", calculator.key_pressed)
+window.bind("<Key>", key_pressed)
 
 # region BUTTONS
 button_options = {
@@ -77,7 +101,7 @@ remove = tkinter.Button(
     **button_options,
     bg=theme.bg_operators,
     text="CE",
-    command=lambda: calculator.clear("CE"),
+    command=lambda: calculator.clear_logic("CE"),
 )
 remove.grid(row=2, column=2)
 
@@ -86,7 +110,7 @@ remove_all = tkinter.Button(
     **button_options,
     bg=theme.bg_operators,
     text="C",
-    command=lambda: calculator.clear("C"),
+    command=lambda: calculator.clear_logic("C"),
 )
 remove_all.grid(row=2, column=3)
 
@@ -258,7 +282,6 @@ for button in operators_buttons:
     button.config(bg=theme.bg_operators, activebackground=theme.actbg_operators)
     button.bind("<Enter>", theme.enter_operators_leave_numbers)
     button.bind("<Leave>", theme.enter_numbers_leave_operators)
-
 
 for button in numbers_buttons:
     button.config(bg=theme.bg_numbers, activebackground=theme.actbg_numbers)
