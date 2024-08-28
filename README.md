@@ -20,14 +20,14 @@ Esta aplicación es una calculadora implementada en Python utilizando la bibliot
 
 ## Librerías
 
-- **Python 3.x**
+- **Python 3.11**
 - **tkinter**: Librería estándar de Python para crear interfaces gráficas de usuario. Viene incluida en la mayoría de las distribuciones de Python para Windows.
 - **winreg**: Librería estándar de Python para acceder al registro de Windows. Viene incluida en la mayoría de las distribuciones de Python para Windows.
 
 Opcional, si queremos crear el ejecutable con pyinstaller:
 - **pyinstaller 6.10.0**: Librería que convierte programas Python en ejecutables autónomos para Windows, Linux y macOS.
-- 
-**!Atención**: Para que el ejecutable no falle se debe crear una carpeta con el nombre '*/dist*' en la raíz del proyecto, y posteriormente copiar la carpeta '*/assets*' en su interior.
+  
+**!Atención**: Para que el ejecutable no falle se debe crear una carpeta con el nombre '*dist*' en la raíz del proyecto, y posteriormente copiar la carpeta '*assets*' en su interior.
 
 Para crear el instalador compilando el ejecutable y la carpeta */assets* he utilizado el programa '*Inno Setup*'. 
 
@@ -51,7 +51,7 @@ Adjunto un tutorial detallado realizado por *Python Simplified*:
 
 o (si tu sistema operativo es Windows)
 
-1. Descargas el instalador que se encuentra en [/installer/calculadora_v1.0.exe](/installer/calculadora_v1.0.exe).
+1. Descarga el instalador que se encuentra en [/installer](/installer).
 2. Ejecutas el instalador, y listo, tendrás el programa instalado en tu equipo.
 
 ## Contribuciones
