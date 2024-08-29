@@ -27,53 +27,59 @@ class Calculator:
         self.count += "{:,}".format(int(text_without_dots)).replace(",", ".").count(".")
 
     def calculate(self):
-        if "%" in self.list_operators:
-            if self.list_operators[0] == "*":
-                result = self.list_numbers[1] / 100
-            else:
-                result = self.list_numbers[0] * self.list_numbers[1] / 100
-        elif self.list_operators[0] == "+":
-            result = self.list_numbers[0] + self.list_numbers[1]
-        elif self.list_operators[0] == "-":
-            result = self.list_numbers[0] - self.list_numbers[1]
-        elif self.list_operators[0] == "*":
-            result = self.list_numbers[0] * self.list_numbers[1]
-        elif self.list_operators[0] == "/":
-            try:
+        def format_result(result):
+            if str(result).endswith(".0"):
+                result = int(result)
+            formatted_result = (
+                "{:,}".format(float(result) if "." in str(result) else int(result))
+                .replace(".", "#")
+                .replace(",", ".")
+                .replace("#", ",")
+            )
+            if len(formatted_result) > 20:
+                formatted_result = formatted_result[:18] + "..."
+            return formatted_result
+
+        try:
+            if "%" in self.list_operators:
+                if self.list_operators[0] == "*":
+                    result = self.list_numbers[1] / 100
+                else:
+                    result = self.list_numbers[0] * self.list_numbers[1] / 100
+            elif self.list_operators[0] == "+":
+                result = self.list_numbers[0] + self.list_numbers[1]
+            elif self.list_operators[0] == "-":
+                result = self.list_numbers[0] - self.list_numbers[1]
+            elif self.list_operators[0] == "*":
+                result = self.list_numbers[0] * self.list_numbers[1]
+            elif self.list_operators[0] == "/":
                 result = self.list_numbers[0] / self.list_numbers[1]
-            except ZeroDivisionError:
-                result = "No se puede dividir entre 0"
 
-        if str(result).endswith(".0"):
-            result = int(result)
+            if "%" in self.list_operators:
+                self.list_numbers[1] = result
+                self.list_operators.remove(self.list_operators[1])
+            elif (
+                not "=" in self.list_operators
+                and result != "No se puede dividir entre 0"
+            ):
+                self.list_numbers[0] = result
+                self.list_numbers.remove(self.list_numbers[1])
+                self.list_operators.remove(self.list_operators[0])
+            else:
+                self.list_operators.clear()
+                if result == "No se puede dividir entre 0":
+                    self.list_numbers.clear()
+                    return result
+                self.list_numbers = [result]
 
-        if "%" in self.list_operators:
-            self.list_numbers[1] = result
-            self.list_operators.remove(self.list_operators[1])
-        elif not "=" in self.list_operators and result != "No se puede dividir entre 0":
-            self.list_numbers[0] = result
-            self.list_numbers.remove(self.list_numbers[1])
-            self.list_operators.remove(self.list_operators[0])
-        else:
+            return format_result(result)
+
+        except ZeroDivisionError:
+            self.list_numbers.clear()
             self.list_operators.clear()
-            if result == "No se puede dividir entre 0":
-                self.list_numbers.clear()
-                return result
-            self.list_numbers = [result]
+            return "No se puede dividir entre 0"
 
-        result = (
-            "{:,}".format(float(result) if "." in str(result) else int(result))
-            .replace(".", "#")
-            .replace(",", ".")
-            .replace("#", ",")
-        )
-
-        if len(result) > 20:
-            result = result[:18] + "..."
-
-        return result
-
-    # region CALCULATOR LOGIC METHODS
+    # region CALCULATOR LOGIC
     def clear_logic(self, option):
         self.clear_screen()
         if option == "C":
@@ -87,8 +93,8 @@ class Calculator:
         if value == "+/-":
             if (
                 self.screen.get() != "0"
-                and not "Error" in self.screen.get()
-                and not "No" in self.screen.get()
+                and "Error" not in self.screen.get()
+                and "No" not in self.screen.get()
             ):
                 if "-" in self.screen.get():
                     self.screen.delete(0)
@@ -103,7 +109,7 @@ class Calculator:
         elif len(self.screen.get()) >= 20 or (
             "," in self.screen.get()
             and value == ","
-            and not "=" in self.secondary_screen["text"]
+            and "=" not in self.secondary_screen["text"]
         ):
             return
         elif (
@@ -112,15 +118,12 @@ class Calculator:
             or "No" in self.screen.get()
             or "=" in self.secondary_screen["text"]
         ):
+            self.screen.delete(0, "end")
             if value == ",":
-                self.screen.delete(0, "end")
                 self.screen.insert(0, "0" + value)
                 self.count += 1
-
             else:
-                self.screen.delete(0, "end")
                 self.screen.insert(0, value)
-
         else:
             self.screen.insert(self.count, value)
             self.count += 1
@@ -134,66 +137,69 @@ class Calculator:
         self.checking_font()
 
     def operator_logic(self, operator):
-        if self.screen.get().endswith(","):
+        screen_text = self.screen.get()
+
+        if screen_text.endswith(","):
             return
-        elif "No" in self.screen.get() or self.screen.get().isalpha():
+
+        if "No" in screen_text or screen_text.isalpha():
             self.screen.delete(0, "end")
             self.screen.insert(0, "Error")
             self.checking_font()
-        elif operator == "%" and len(self.list_operators) == 0:
+            return
+
+        if operator == "%" and not self.list_operators:
             self.clear_screen()
             if "=" in self.secondary_screen["text"]:
                 self.secondary_screen["text"] = ""
-        elif operator == "=" and len(self.list_operators) == 0:
-            self.secondary_screen["text"] = self.screen.get() + " " + operator + " "
-        else:
-            if not len(self.list_numbers) == 2 and not (
-                "=" in self.secondary_screen["text"] and len(self.list_numbers) == 1
-            ):
-                formatting_screen = self.screen.get().replace(".", "")
-                if "," in self.screen.get():
-                    self.list_numbers.append(float(formatting_screen.replace(",", ".")))
-                else:
-                    self.list_numbers.append(int(formatting_screen))
+            return
 
-            self.list_operators.append(operator)
+        if operator == "=" and not self.list_operators:
+            self.secondary_screen["text"] = f"{screen_text} {operator} "
+            return
 
-            if operator == "*":
-                print_operator = "x"
-            elif operator == "/":
-                print_operator = "÷"
+        if len(self.list_numbers) < 2 and not (
+            "=" in self.secondary_screen["text"] and len(self.list_numbers) == 1
+        ):
+            formatting_screen = screen_text.replace(".", "")
+            self.list_numbers.append(float(formatting_screen.replace(",", ".")))
+
+        self.list_operators.append(operator)
+        print_operator = {"*": "x", "/": "÷"}.get(operator, operator)
+
+        if len(self.list_numbers) == 1:
+            self.secondary_screen["text"] = f"{screen_text} {print_operator} "
+            self.clear_screen()
+            return
+
+        result = self.calculate()
+
+        if result == "No se puede dividir entre 0":
+            self.secondary_screen["text"] = ""
+            self.screen.delete(0, "end")
+            self.screen.insert(0, result)
+            self.screen["font"] = ("Google Sans Mono", 15)
+            return
+
+        if operator == "%":
+            self.secondary_screen["text"] += result
+            self.clear_screen()
+            return
+
+        if operator == "=":
+            if self.secondary_screen["text"][-1].isdigit():
+                self.secondary_screen["text"] += f" {print_operator} "
             else:
-                print_operator = operator
+                self.secondary_screen["text"] += f"{screen_text} {print_operator} "
 
-            if len(self.list_numbers) == 1:
+            if len(self.secondary_screen["text"]) > 30:
                 self.secondary_screen["text"] = (
-                    self.screen.get() + " " + print_operator + " "
+                    f"...{self.secondary_screen['text'][-27:]}"
                 )
-                self.clear_screen()
-            else:
-                result = self.calculate()
-                if result == "No se puede dividir entre 0":
-                    self.secondary_screen["text"] = ""
-                    self.screen.delete(0, "end")
-                    self.screen.insert(0, result)
-                    self.screen["font"] = ("Google Sans Mono", 15)
-                elif operator == "%":
-                    self.secondary_screen["text"] += result
-                    self.clear_screen()
-                elif operator == "=":
-                    if self.secondary_screen["text"][-1].isdigit():
-                        self.secondary_screen["text"] += " " + print_operator + " "
-                    else:
-                        self.secondary_screen["text"] += (
-                            self.screen.get() + " " + print_operator + " "
-                        )
-                    if len(self.secondary_screen["text"]) > 30:
-                        self.secondary_screen["text"] = (
-                            "..." + self.secondary_screen["text"][-27:]
-                        )
-                    self.screen.delete(0, "end")
-                    self.screen.insert(0, result)
-                    self.checking_font()
-                else:
-                    self.secondary_screen["text"] = result + " " + print_operator + " "
-                    self.clear_screen()
+            self.screen.delete(0, "end")
+            self.screen.insert(0, result)
+            self.checking_font()
+            return
+
+        self.secondary_screen["text"] = f"{result} {print_operator} "
+        self.clear_screen()
