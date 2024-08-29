@@ -2,6 +2,10 @@
 
 Esta aplicación es una calculadora implementada en Python utilizando la biblioteca `tkinter` para la interfaz gráfica de usuario.
 
+<!-- <p align='center'>
+  <img src='https://github.com/Gdr18/Url_Shortener_Frontend/assets/118227919/f1ec58ae-b08e-4c36-9b48-e1f791c979a4' alt='redis_link_shortener_gif' width='50%'></img>
+</p> -->
+
 ## Características
 
 - Selecciona el modo oscuro o claro automáticamente basándose en la configuración del sistema.
@@ -9,8 +13,9 @@ Esta aplicación es una calculadora implementada en Python utilizando la bibliot
 - Manejo de errores y comunicación al usuario de ellos.
 
 ## Directorio
+
 - **/assets**: En este directorio se encuentra '*Calculator_30001.ico*', el icono utilizado para la ventana.
-- **/installer**: En este directorio se encuentra el instalador de Windows de la aplicación '*calculadora_v1.0.exe*'.
+- **/installer**: En este directorio se encuentra el instalador de Windows de la aplicación '*calculadora_v1.0.1exe*'.
 - **calculator_logic.py**: En este archivo se desarrolla la lógica principal de la aplicación.
 - **calculator.py**: En este archivo se configura la interfaz gráfica de la calculadora y se vinculan los botones a las funciones lógicas definidas en '*calculator_logic.py*'. Además, se aplica el tema visual definido en '*theme_manager.py*'.
 - **theme_manager.py**: En este archivo se desarrolla la lógica para la aplicación de un tema u otro según la configuración del usuario.
@@ -51,7 +56,7 @@ Adjunto un tutorial detallado realizado por *Python Simplified*:
 
 o (si tu sistema operativo es Windows)
 
-1. Descarga el instalador que se encuentra en [/installer/calculadora_v1.0](/installer/calculadora_v1.0). A continuación clica en '*Raw*'.
+1. Descarga el instalador que se encuentra en [/installer/calculadora_v1.0](/installer/calculadora_v1.0.1). A continuación clica en '*Raw*'.
 2. Ejecutas el instalador, y listo, tendrás el programa instalado en tu equipo.
 
 ## Contribuciones

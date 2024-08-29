@@ -47,7 +47,8 @@ screen.insert(0, "0")
 
 calculator = Calculator(screen, secondary_screen)
 
-#region KEYBOARD EVENT HANDLER
+
+# region KEYBOARD EVENT HANDLER
 def key_pressed(event):
     allowed_values = ("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ",")
     allowed_operators = ("+", "-", "*", "/", "%", "=")
@@ -71,7 +72,8 @@ def key_pressed(event):
             calculator.count -= 1
             if "." in calculator.screen.get() and not "," in calculator.screen.get():
                 calculator.formatting_screen_with_dots()
-        calculator.checking_font()     
+        calculator.checking_font()
+
 
 window.bind("<Key>", key_pressed)
 
@@ -117,7 +119,7 @@ remove_all.grid(row=2, column=3)
 division = tkinter.Button(
     window,
     **button_options,
-    text="/",
+    text="÷",
     command=lambda: calculator.operator_logic("/"),
 )
 division.grid(row=2, column=4)

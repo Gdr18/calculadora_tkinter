@@ -6,7 +6,7 @@ class Calculator:
         self.screen = screen
         self.secondary_screen = secondary_screen
 
-    #region COMMON METHODS
+    # region COMMON METHODS
     def checking_font(self):
         if len(self.screen.get()) > 13:
             self.screen["font"] = ("Google Sans Mono", 20)
@@ -73,7 +73,7 @@ class Calculator:
 
         return result
 
-    #region CALCULATOR LOGIC METHODS
+    # region CALCULATOR LOGIC METHODS
     def clear_logic(self, option):
         self.clear_screen()
         if option == "C":
@@ -145,8 +145,7 @@ class Calculator:
             if "=" in self.secondary_screen["text"]:
                 self.secondary_screen["text"] = ""
         elif operator == "=" and len(self.list_operators) == 0:
-            self.list_operators.append(operator)
-            self.clear_screen()
+            self.secondary_screen["text"] = self.screen.get() + " " + operator + " "
         else:
             if not len(self.list_numbers) == 2 and not (
                 "=" in self.secondary_screen["text"] and len(self.list_numbers) == 1
