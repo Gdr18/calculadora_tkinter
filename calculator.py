@@ -39,11 +39,16 @@ screen = tkinter.Entry(
     justify="right",
     bd=0,
     width=10,
+    cursor="arrow"
 )
 screen.grid(row=1, column=1, columnspan=5, sticky="nsew")
 
 screen.insert(0, "0")
 
+def prevent_focus(event):
+    return "break"
+
+screen.bind("<Button-1>", prevent_focus)
 
 calculator = Calculator(screen, secondary_screen)
 
@@ -292,3 +297,4 @@ for button in numbers_buttons:
 
 if __name__ == "__main__":
     window.mainloop()
+    
