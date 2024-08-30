@@ -1,3 +1,5 @@
+from decimal import Decimal, getcontext, ROUND_HALF_UP
+
 class Calculator:
     def __init__(self, screen, secondary_screen):
         self.list_numbers = []
@@ -27,7 +29,11 @@ class Calculator:
         self.count += "{:,}".format(int(text_without_dots)).replace(",", ".").count(".")
 
     def calculate(self):
+        getcontext().prec = 28
+
         def format_result(result):
+            if result.as_tuple().exponent < -2:
+                result = result.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
             if str(result).endswith(".0"):
                 result = int(result)
             formatted_result = (
@@ -43,17 +49,18 @@ class Calculator:
         try:
             if "%" in self.list_operators:
                 if self.list_operators[0] == "*":
-                    result = self.list_numbers[1] / 100
+                    result = Decimal(self.list_numbers[1]) / Decimal(100)
                 else:
-                    result = self.list_numbers[0] * self.list_numbers[1] / 100
+                    result = Decimal(self.list_numbers[0]) * Decimal(self.list_numbers[1]) / Decimal(100)
             elif self.list_operators[0] == "+":
-                result = self.list_numbers[0] + self.list_numbers[1]
+                result = Decimal(self.list_numbers[0]) + Decimal(self.list_numbers[1])
             elif self.list_operators[0] == "-":
-                result = self.list_numbers[0] - self.list_numbers[1]
+                result = Decimal(self.list_numbers[0]) - Decimal(self.list_numbers[1])
             elif self.list_operators[0] == "*":
-                result = self.list_numbers[0] * self.list_numbers[1]
+                result = Decimal(self.list_numbers[0]) * Decimal(self.list_numbers[1])
             elif self.list_operators[0] == "/":
-                result = self.list_numbers[0] / self.list_numbers[1]
+                result = Decimal(self.list_numbers[0]) / Decimal(self.list_numbers[1])
+
 
             if "%" in self.list_operators:
                 self.list_numbers[1] = result
@@ -88,6 +95,7 @@ class Calculator:
             self.list_operators.clear()
         elif "=" in self.secondary_screen["text"]:
             self.secondary_screen["text"] = ""
+            self.list_numbers.clear()
 
     def digit_logic(self, value):
         if value == "+/-":
