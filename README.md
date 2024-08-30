@@ -2,9 +2,9 @@
 
 Esta aplicación es una calculadora implementada en Python utilizando la biblioteca `tkinter` para la interfaz gráfica de usuario.
 
-<!-- <p align='center'>
-  <img src='https://github.com/Gdr18/Url_Shortener_Frontend/assets/118227919/f1ec58ae-b08e-4c36-9b48-e1f791c979a4' alt='redis_link_shortener_gif' width='50%'></img>
-</p> -->
+<p align='center'>
+  <iframe src='https://github.com/user-attachments/assets/63856004-6505-4264-bd88-f8736d0539a7' title='Animación Calculadora' width='50%' allow='autoplay'></iframe>
+</p> 
 
 ## Características
 
